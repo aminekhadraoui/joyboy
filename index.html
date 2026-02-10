@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Database Administrator Assistant</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a2980, #26d0ce);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .robot-container {
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      max-width: 900px;
+      width: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .robot-container:hover {
+      transform: translateY(-5px);
+    }
+
+    .header {
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #7f8c8d;
+      font-size: 1.1rem;
+    }
+
+    .robot {
+      width: 150px;
+      height: 180px;
+      background: linear-gradient(145deg, #3498db, #2980b9);
+      border-radius: 50% 50% 0 0;
+      position: relative;
+      margin: 0 auto 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    .robot::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
+      background-color: #ecf0f1;
+      border-radius: 50%;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .robot::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 20px;
+      background: linear-gradient(to top, #3498db, #2980b9);
+      border-radius: 0 0 10px 10px;
+    }
+
+    .antenna {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 25px;
+      background-color: #e74c3c;
+      border-radius: 5px 5px 0 0;
+      animation: blink 3s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .antenna::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -5px;
+      width: 15px;
+      height: 15px;
+      background-color: #e74c3c;
+      border-radius: 50%;
+    }
+
+    .chat-popup {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 20px;
+      max-width: 100%;
+      display: inline-block;
+      position: relative;
+      text-align: left;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      min-height: 100px;
+    }
+
+    .chat-popup::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 10px solid #2c3e50;
+    }
+
+    .user-input-container {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .user-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border 0.3s ease;
+    }
+
+    .user-input:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .action-button {
+      padding: 12px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+
+    .action-button:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-button:active {
+      transform: translateY(0);
+    }
+
+    .action-button.secondary {
+      background-color: #95a5a6;
+    }
+
+    .action-button.secondary:hover {
+      background-color: #7f8c8d;
+    }
+
+    .action-button.success {
+      background-color: #2ecc71;
+    }
+
+    .action-button.success:hover {
+      background-color: #27ae60;
+    }
+
+    .code-output {
+      margin-top: 30px;
+      background-color: #2c3e50;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: left;
+      white-space: pre-wrap;
+      font-family: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+      max-height: 500px;
+      overflow-y: auto;
+      color: #ecf0f1;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+      display: none;
+      border: 1px solid #34495e;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      color: #ecf0f1;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #34495e;
+    }
+
+    .code-header h3 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .copy-button {
+      padding: 8px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .copy-button:hover {
+      background-color: #2980b9;
+    }
+
+    .database-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .db-option {
+      background-color: #ecf0f1;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .db-option:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      border-color: #3498db;
+    }
+
+    .db-option.selected {
+      border-color: #3498db;
+      background-color: #d6eaf8;
+      box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+    }
+
+    .db-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .db-name {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .db-desc {
+      font-size: 0.8rem;
+      color: #7f8c8d;
+      line-height: 1.3;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background-color: #ecf0f1;
+      border-radius: 5px;
+      margin: 20px 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #2ecc71, #27ae60);
+      width: 0%;
+      transition: width 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .step-indicator {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .step-title {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .success-message {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      display: none;
+      text-align: center;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .table-builder {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 15px;
+      border: 1px solid #e9ecef;
+    }
+
+    .table-item {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 2px dashed #dee2e6;
+    }
+
+    .table-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .column-row {
+      display: grid;
+      grid-template-columns: 2fr 2fr 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .column-header {
+      display: grid;
+      grid-template-columns: 2fr 2fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #2c3e50;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-radius: 5px;
+    }
+
+    .advanced-options {
+      background-color: #f1f8ff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+      border-left: 4px solid #3498db;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .option-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+    }
+
+    .statistics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 10px;
+      background-color: white;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: #7f8c8d;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 15px;
+      background-color: #f1f8ff;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: #3498db;
+      margin-bottom: 15px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #2ecc71;
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @media (max-width: 768px) {
+      .robot-container {
+        padding: 20px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .database-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .column-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+      
+      .column-header {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="robot-container">
+    <div class="header">
+      <h1>🚀 Advanced Database Administrator Assistant</h1>
+      <p>Professional database schema design with advanced features and optimizations</p>
+    </div>
+    
+    <div class="robot">
+      <div class="antenna"></div>
+    </div>
+    
+    <div class="progress-bar">
+      <div class="progress" id="progressBar"></div>
+    </div>
+    <div class="step-indicator">
+      <span class="step-title" id="stepTitle">Step 1: Database Selection</span>
+      <span id="stepIndicator">Step 1 of 8</span>
+    </div>
+    
+    <div class="chat-popup" id="chatPopup">
+      Hello! I'm your Advanced Database Assistant. I'll help you design enterprise-grade database schemas with advanced features.
+    </div>
+    
+    <div class="user-input-container">
+      <div id="inputArea">
+        <!-- Dynamic content will be shown here -->
+      </div>
+      
+      <div class="button-group">
+        <button class="action-button secondary" id="backButton" style="display: none;">← Back</button>
+        <button class="action-button" id="submitButton">Next →</button>
+        <button class="action-button secondary" id="resetButton">Start Over</button>
+      </div>
+    </div>
+    
+    <div class="success-message" id="successMessage">
+      ✅ Database schema generated successfully! Advanced optimizations applied.
+    </div>
+    
+    <div class="statistics" id="statistics" style="display: none;">
+      <!-- Statistics will be populated here -->
+    </div>
+    
+    <div class="code-output" id="codeOutput">
+      <div class="code-header">
+        <h3>📊 Generated Database Schema</h3>
+        <button class="copy-button" id="copyButton">📋 Copy Code</button>
+      </div>
+      <pre id="codeContent"></pre>
+    </div>
+  </div>
+
+  <script>
+    // Enhanced Application State
+    let step = 0;
+    let selectedDatabase = '';
+    let databaseDetails = {
+      name: '',
+      schemaType: 'transactional',
+      tables: [],
+      relationships: [],
+      indexes: [],
+      users: [],
+      isProduction: false,
+      enableBackup: true,
+      enableReplication: false,
+      enableMonitoring: true,
+      enableAuditing: false,
+      partitioning: false,
+      sharding: false,
+      cacheConfig: 'basic'
+    };
+
+    // Advanced Database options
+    const databaseTypes = [
+      { 
+        id: 'mysql', 
+        name: 'MySQL', 
+        icon: '🗄️', 
+        desc: 'Enterprise relational database with ACID compliance',
+        features: ['ACID', 'Replication', 'Partitioning', 'Full-text search'],
+        enterprise: true
+      },
+      { 
+        id: 'postgresql', 
+        name: 'PostgreSQL', 
+        icon: '🐘', 
+        desc: 'Advanced open-source object-relational database',
+        features: ['JSONB', 'GIS', 'Full ACID', 'Materialized Views'],
+        enterprise: true
+      },
+      { 
+        id: 'oracle', 
+        name: 'Oracle DB', 
+        icon: '🔶', 
+        desc: 'Enterprise-grade multi-model database',
+        features: ['RAC', 'Partitioning', 'Advanced Security', 'Data Guard'],
+        enterprise: true
+      },
+      { 
+        id: 'sqlserver', 
+        name: 'SQL Server', 
+        icon: '⚙️', 
+        desc: 'Microsoft enterprise database with BI integration',
+        features: ['AlwaysOn', 'Columnstore', 'PolyBase', 'ML Services'],
+        enterprise: true
+      },
+      { 
+        id: 'mongodb', 
+        name: 'MongoDB', 
+        icon: '🍃', 
+        desc: 'NoSQL document database with horizontal scaling',
+        features: ['Sharding', 'Aggregation', 'Change Streams', 'ACID'],
+        enterprise: true
+      },
+      { 
+        id: 'cassandra', 
+        name: 'Cassandra', 
+        icon: '⚡', 
+        desc: 'Distributed NoSQL database for massive scale',
+        features: ['Linear Scalability', 'Fault Tolerance', 'Time Series'],
+        enterprise: true
+      },
+      { 
+        id: 'redis', 
+        name: 'Redis', 
+        icon: '🔴', 
+        desc: 'In-memory data structure store',
+        features: ['Sub-millisecond', 'Pub/Sub', 'Persistence'],
+        enterprise: false
+      },
+      { 
+        id: 'mariadb', 
+        name: 'MariaDB', 
+        icon: '🌊', 
+        desc: 'MySQL fork with enhanced features',
+        features: ['Galera Cluster', 'Storage Engines', 'GIS'],
+        enterprise: true
+      }
+    ];
+
+    // Enhanced Questions
+    const questions = [
+      {
+        text: "Let's start by choosing a database system for your enterprise application:",
+        type: 'database-select',
+        title: 'Database Selection'
+      },
+      {
+        text: "Great choice! What's the name of your database? (Use only alphanumeric and underscores)",
+        type: 'text-input',
+        placeholder: 'e.g., enterprise_db, fintech_system, healthcare_app',
+        title: 'Database Naming',
+        validation: /^[a-zA-Z_][a-zA-Z0-9_]*$/
+      },
+      {
+        text: "Select the schema type for your application:",
+        type: 'schema-select',
+        title: 'Schema Configuration'
+      },
+      {
+        text: "How many main tables do you need in your core schema? (Recommended: 5-15)",
+        type: 'number-input',
+        placeholder: 'Enter number between 5 and 20',
+        min: 5,
+        max: 20,
+        title: 'Table Count'
+      },
+      {
+        text: "Now let's define your tables with advanced configurations:",
+        type: 'table-definition',
+        title: 'Table Design'
+      },
+      {
+        text: "Configure relationships and constraints between tables:",
+        type: 'relationships',
+        title: 'Relationships'
+      },
+      {
+        text: "Configure advanced database features and optimizations:",
+        type: 'advanced-options',
+        title: 'Advanced Features'
+      },
+      {
+        text: "Configure database users, roles, and security policies:",
+        type: 'security-config',
+        title: 'Security Configuration'
+      }
+    ];
+
+    // Schema types
+    const schemaTypes = [
+      { id: 'transactional', name: 'Transactional OLTP', desc: 'High-volume transactions with ACID compliance' },
+      { id: 'analytical', name: 'Analytical OLAP', desc: 'Read-heavy for reporting and analytics' },
+      { id: 'hybrid', name: 'Hybrid HTAP', desc: 'Combines transactional and analytical workloads' },
+      { id: 'datawarehouse', name: 'Data Warehouse', desc: 'Large-scale historical data storage' },
+      { id: 'timeseries', name: 'Time Series', desc: 'Optimized for timestamped data points' },
+      { id: 'graph', name: 'Graph Database', desc: 'Focus on relationships between entities' }
+    ];
+
+    // Common table templates
+    const tableTemplates = {
+      transactional: [
+        { name: 'users', description: 'User accounts and authentication' },
+        { name: 'customers', description: 'Customer information' },
+        { name: 'orders', description: 'Order transactions' },
+        { name: 'products', description: 'Product catalog' },
+        { name: 'inventory', description: 'Stock management' },
+        { name: 'payments', description: 'Payment transactions' },
+        { name: 'addresses', description: 'Address book' },
+        { name: 'audit_log', description: 'Security audit trail' }
+      ],
+      analytical: [
+        { name: 'fact_sales', description: 'Sales fact table' },
+        { name: 'dim_customers', description: 'Customer dimension' },
+        { name: 'dim_products', description: 'Product dimension' },
+        { name: 'dim_time', description: 'Time dimension' },
+        { name: 'dim_location', description: 'Location dimension' },
+        { name: 'aggregated_sales', description: 'Pre-aggregated sales' },
+        { name: 'kpi_metrics', description: 'Key performance indicators' },
+        { name: 'data_sources', description: 'ETL source tracking' }
+      ],
+      hybrid: [
+        { name: 'real_time_data', description: 'Real-time operational data' },
+        { name: 'analytical_views', description: 'Materialized views for analytics' },
+        { name: 'user_sessions', description: 'User interaction tracking' },
+        { name: 'event_stream', description: 'Event sourcing data' },
+        { name: 'cache_updates', description: 'Cache synchronization' },
+        { name: 'aggregated_stats', description: 'Statistical aggregations' }
+      ]
+    };
+
+    // DOM Elements
+    const chatPopup = document.getElementById('chatPopup');
+    const inputArea = document.getElementById('inputArea');
+    const submitButton = document.getElementById('submitButton');
+    const resetButton = document.getElementById('resetButton');
+    const backButton = document.getElementById('backButton');
+    const codeOutput = document.getElementById('codeOutput');
+    const codeContent = document.getElementById('codeContent');
+    const copyButton = document.getElementById('copyButton');
+    const successMessage = document.getElementById('successMessage');
+    const progressBar = document.getElementById('progressBar');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const stepTitle = document.getElementById('stepTitle');
+    const statistics = document.getElementById('statistics');
+
+    // Initialize
+    askQuestion();
+
+    // Enhanced functions
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.95;
+        utterance.pitch = 1.1;
+        utterance.volume = 0.8;
+        speechSynthesis.speak(utterance);
+      }
+    }
+
+    function updateProgress() {
+      const progress = ((step + 1) / questions.length) * 100;
+      progressBar.style.width = `${progress}%`;
+      stepIndicator.textContent = `Step ${step + 1} of ${questions.length}`;
+      stepTitle.textContent = questions[step].title;
+    }
+
+    function askQuestion() {
+      const question = questions[step];
+      chatPopup.textContent = question.text;
+      speak(question.text);
+      updateProgress();
+      
+      inputArea.innerHTML = '';
+      backButton.style.display = step > 0 ? 'block' : 'none';
+      
+      switch (question.type) {
+        case 'database-select':
+          renderDatabaseOptions();
+          break;
+        case 'text-input':
+          renderTextInput(question);
+          break;
+        case 'number-input':
+          renderNumberInput(question);
+          break;
+        case 'schema-select':
+          renderSchemaSelect();
+          break;
+        case 'table-definition':
+          renderTableDefinition();
+          break;
+        case 'relationships':
+          renderRelationships();
+          break;
+        case 'advanced-options':
+          renderAdvancedOptions();
+          break;
+        case 'security-config':
+          renderSecurityConfig();
+          break;
+      }
+    }
+
+    function renderDatabaseOptions() {
+      const container = document.createElement('div');
+      container.className = 'database-options';
+      
+      databaseTypes.forEach(db => {
+        const option = document.createElement('div');
+        option.className = `db-option ${selectedDatabase === db.id ? 'selected' : ''}`;
+        option.dataset.id = db.id;
+        
+        const features = db.features.map(f => `<span style="display: inline-block; background: #e3f2fd; padding: 2px 8px; border-radius: 12px; margin: 2px; font-size: 0.7rem;">${f}</span>`).join('');
+        
+        option.innerHTML = `
+          <div class="db-icon">${db.icon}</div>
+          <div class="db-name">${db.name} ${db.enterprise ? '🏢' : ''}</div>
+          <div class="db-desc">${db.desc}</div>
+          <div style="margin-top: 10px;">${features}</div>
+        `;
+        
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.db-option').forEach(el => el.classList.remove('selected'));
+          option.classList.add('selected');
+          selectedDatabase = db.id;
+        });
+        
+        container.appendChild(option);
+      });
+      
+      inputArea.appendChild(container);
+    }
+
+    function renderTextInput(question) {
+      const container = document.createElement('div');
+      container.innerHTML = `
+        <input type="text" 
+               class="user-input" 
+               id="currentInput" 
+               placeholder="${question.placeholder}"
+               value="${databaseDetails.name}"
+               autocomplete="off">
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>Validating database name...</span>
+        </div>
+      `;
+      
+      const input = container.querySelector('#currentInput');
+      input.addEventListener('input', function() {
+        if (question.validation) {
+          const isValid = question.validation.test(this.value);
+          this.style.borderColor = isValid ? '#2ecc71' : '#e74c3c';
+        }
+      });
+      
+      inputArea.appendChild(container);
+      input.focus();
+      input.select();
+    }
+
+    function renderNumberInput(question) {
+      const container = document.createElement('div');
+      container.innerHTML = `
+        <input type="number" 
+               class="user-input" 
+               id="currentInput" 
+               placeholder="${question.placeholder}"
+               value="${databaseDetails.tables.length || 5}"
+               min="${question.min}" 
+               max="${question.max}"
+               step="1">
+        <div class="statistics" style="display: block; margin-top: 20px;">
+          <div class="stat-item">
+            <div class="stat-label">Recommended</div>
+            <div class="stat-value">8-12</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Complexity</div>
+            <div class="stat-value">Medium</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Maintenance</div>
+            <div class="stat-value">Moderate</div>
+          </div>
+        </div>
+      `;
+      
+      inputArea.appendChild(container);
+      container.querySelector('#currentInput').focus();
+    }
+
+    function renderSchemaSelect() {
+      const container = document.createElement('div');
+      container.className = 'database-options';
+      
+      schemaTypes.forEach(schema => {
+        const option = document.createElement('div');
+        option.className = `db-option ${databaseDetails.schemaType === schema.id ? 'selected' : ''}`;
+        option.dataset.id = schema.id;
+        
+        option.innerHTML = `
+          <div style="font-size: 2rem; margin-bottom: 10px;">📊</div>
+          <div class="db-name">${schema.name}</div>
+          <div class="db-desc">${schema.desc}</div>
+        `;
+        
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.db-option').forEach(el => el.classList.remove('selected'));
+          option.classList.add('selected');
+          databaseDetails.schemaType = schema.id;
+        });
+        
+        container.appendChild(option);
+      });
+      
+      inputArea.appendChild(container);
+    }
+
+    function renderTableDefinition() {
+      const container = document.createElement('div');
+      const tableCount = parseInt(document.querySelector('#currentInput')?.value) || 8;
+      
+      // Initialize tables if empty
+      if (databaseDetails.tables.length === 0) {
+        const template = tableTemplates[databaseDetails.schemaType] || tableTemplates.transactional;
+        databaseDetails.tables = template.slice(0, tableCount).map((t, i) => ({
+          name: t.name,
+          description: t.description,
+          columns: getDefaultColumnsForTable(t.name, i),
+          indexes: ['created_at', 'status'],
+          constraints: []
+        }));
+      }
+      
+      container.innerHTML = `
+        <div class="table-builder">
+          <div style="margin-bottom: 20px; color: #7f8c8d;">
+            Designing ${tableCount} tables for ${databaseDetails.schemaType} schema. Each table includes default columns and constraints.
+          </div>
+          
+          <div class="column-header">
+            <div>Table Name</div>
+            <div>Description</div>
+            <div>Columns</div>
+            <div>Actions</div>
+          </div>
+      `;
+      
+      databaseDetails.tables.forEach((table, index) => {
+        const tableDiv = document.createElement('div');
+        tableDiv.className = 'table-item';
+        tableDiv.innerHTML = `
+          <div class="column-row">
+            <input type="text" 
+                   class="user-input table-name" 
+                   value="${table.name}"
+                   placeholder="Table name"
+                   data-index="${index}">
+            <input type="text" 
+                   class="user-input table-desc" 
+                   value="${table.description}"
+                   placeholder="Description"
+                   data-index="${index}">
+            <input type="text" 
+                   class="user-input column-count" 
+                   value="${table.columns.length}"
+                   placeholder="Columns"
+                   data-index="${index}"
+                   readonly>
+            <button class="action-button secondary edit-table" data-index="${index}" style="padding: 8px; font-size: 0.9rem;">
+              Edit Columns
+            </button>
+          </div>
+          <div class="advanced-options" style="margin-top: 10px; display: none;" id="table-details-${index}">
+            <div style="font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Column Configuration:</div>
+            ${table.columns.map((col, colIndex) => `
+              <div class="column-row" style="margin-bottom: 8px;">
+                <input type="text" class="user-input" value="${col.name}" placeholder="Column name" data-table="${index}" data-col="${colIndex}">
+                <input type="text" class="user-input" value="${col.type}" placeholder="Data type" data-table="${index}" data-col="${colIndex}">
+                <input type="text" class="user-input" value="${col.constraints || ''}" placeholder="Constraints" data-table="${index}" data-col="${colIndex}">
+                <button class="action-button secondary remove-col" data-table="${index}" data-col="${colIndex}" style="padding: 5px 10px;">Remove</button>
+              </div>
+            `).join('')}
+            <button class="action-button secondary add-column" data-table="${index}" style="margin-top: 10px; padding: 8px 15px;">
+              + Add Column
+            </button>
+          </div>
+        `;
+        container.appendChild(tableDiv);
+      });
+      
+      container.innerHTML += `</div>`;
+      
+      // Add event listeners
+      setTimeout(() => {
+        document.querySelectorAll('.edit-table').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const index = this.dataset.index;
+            const details = document.getElementById(`table-details-${index}`);
+            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+          });
+        });
+        
+        document.querySelectorAll('.table-name').forEach(input => {
+          input.addEventListener('input', function() {
+            databaseDetails.tables[this.dataset.index].name = this.value;
+          });
+        });
+        
+        document.querySelectorAll('.table-desc').forEach(input => {
+          input.addEventListener('input', function() {
+            databaseDetails.tables[this.dataset.index].description = this.value;
+          });
+        });
+        
+        document.querySelectorAll('.remove-col').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const tableIdx = this.dataset.table;
+            const colIdx = this.dataset.col;
+            if (databaseDetails.tables[tableIdx].columns.length > 1) {
+              databaseDetails.tables[tableIdx].columns.splice(colIdx, 1);
+              renderTableDefinition();
+            }
+          });
+        });
+        
+        document.querySelectorAll('.add-column').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const tableIdx = this.dataset.table;
+            databaseDetails.tables[tableIdx].columns.push({
+              name: 'new_column',
+              type: 'VARCHAR(255)',
+              constraints: ''
+            });
+            renderTableDefinition();
+          });
+        });
+        
+        document.querySelectorAll('[data-table][data-col]').forEach(input => {
+          input.addEventListener('input', function() {
+            const tableIdx = this.dataset.table;
+            const colIdx = this.dataset.col;
+            const field = this.placeholder.includes('name') ? 'name' : 
+                         this.placeholder.includes('type') ? 'type' : 'constraints';
+            databaseDetails.tables[tableIdx].columns[colIdx][field] = this.value;
+          });
+        });
+      }, 100);
+      
+      inputArea.appendChild(container);
+    }
+
+    function getDefaultColumnsForTable(tableName, index) {
+      const defaults = {
+        users: [
+          { name: 'id', type: 'BIGINT UNSIGNED', constraints: 'PRIMARY KEY AUTO_INCREMENT' },
+          { name: 'uuid', type: 'CHAR(36)', constraints: 'UNIQUE NOT NULL' },
+          { name: 'email', type: 'VARCHAR(255)', constraints: 'UNIQUE NOT NULL' },
+          { name: 'password_hash', type: 'VARCHAR(255)', constraints: 'NOT NULL' },
+          { name: 'created_at', type: 'TIMESTAMP', constraints: 'DEFAULT CURRENT_TIMESTAMP' },
+          { name: 'updated_at', type: 'TIMESTAMP', constraints: 'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP' },
+          { name: 'status', type: 'ENUM("active","inactive","suspended")', constraints: 'DEFAULT "active"' }
+        ],
+        customers: [
+          { name: 'id', type: 'BIGINT UNSIGNED', constraints: 'PRIMARY KEY AUTO_INCREMENT' },
+          { name: 'user_id', type: 'BIGINT UNSIGNED', constraints: 'UNIQUE NOT NULL' },
+          { name: 'first_name', type: 'VARCHAR(100)', constraints: 'NOT NULL' },
+          { name: 'last_name', type: 'VARCHAR(100)', constraints: 'NOT NULL' },
+          { name: 'company', type: 'VARCHAR(255)', constraints: '' },
+          { name: 'tax_id', type: 'VARCHAR(50)', constraints: 'UNIQUE' }
+        ],
+        orders: [
+          { name: 'id', type: 'BIGINT UNSIGNED', constraints: 'PRIMARY KEY AUTO_INCREMENT' },
+          { name: 'order_number', type: 'VARCHAR(50)', constraints: 'UNIQUE NOT NULL' },
+          { name: 'customer_id', type: 'BIGINT UNSIGNED', constraints: 'NOT NULL' },
+          { name: 'total_amount', type: 'DECIMAL(15,2)', constraints: 'NOT NULL' },
+          { name: 'status', type: 'ENUM("pending","paid","shipped","delivered","cancelled")', constraints: 'DEFAULT "pending"' },
+          { name: 'created_at', type: 'TIMESTAMP', constraints: 'DEFAULT CURRENT_TIMESTAMP' }
+        ]
+      };
+      
+      return defaults[tableName] || [
+        { name: 'id', type: 'BIGINT UNSIGNED', constraints: 'PRIMARY KEY AUTO_INCREMENT' },
+        { name: 'name', type: 'VARCHAR(255)', constraints: 'NOT NULL' },
+        { name: 'description', type: 'TEXT', constraints: '' },
+        { name: 'created_at', type: 'TIMESTAMP', constraints: 'DEFAULT CURRENT_TIMESTAMP' },
+        { name: 'updated_at', type: 'TIMESTAMP', constraints: 'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP' }
+      ];
+    }
+
+    function renderRelationships() {
+      const container = document.createElement('div');
+      container.innerHTML = `
+        <div class="advanced-options">
+          <div style="margin-bottom: 15px; font-weight: 600; color: #2c3e50;">
+            Define Foreign Key Relationships (Optional)
+          </div>
+          <div style="color: #7f8c8d; margin-bottom: 20px;">
+            Specify how tables are related. This will create foreign key constraints.
+          </div>
+          
+          <div id="relationships-container">
+            ${databaseDetails.relationships.map((rel, idx) => `
+              <div class="column-row" style="margin-bottom: 10px;">
+                <select class="user-input" data-rel="${idx}" data-field="fromTable">
+                  ${databaseDetails.tables.map(t => `<option value="${t.name}" ${rel.fromTable === t.name ? 'selected' : ''}>${t.name}</option>`).join('')}
+                </select>
+                <input type="text" class="user-input" value="${rel.fromColumn}" placeholder="From column" data-rel="${idx}" data-field="fromColumn">
+                <select class="user-input" data-rel="${idx}" data-field="toTable">
+                  ${databaseDetails.tables.map(t => `<option value="${t.name}" ${rel.toTable === t.name ? 'selected' : ''}>${t.name}</option>`).join('')}
+                </select>
+                <input type="text" class="user-input" value="${rel.toColumn}" placeholder="To column" data-rel="${idx}" data-field="toColumn">
+              </div>
+            `).join('')}
+          </div>
+          
+          <button class="action-button secondary" id="addRelationship" style="margin-top: 15px;">
+            + Add Relationship
+          </button>
+        </div>
+      `;
+      
+      inputArea.appendChild(container);
+      
+      document.getElementById('addRelationship').addEventListener('click', () => {
+        databaseDetails.relationships.push({
+          fromTable: databaseDetails.tables[0]?.name || '',
+          fromColumn: 'id',
+          toTable: databaseDetails.tables[1]?.name || '',
+          toColumn: 'id'
+        });
+        renderRelationships();
+      });
+      
+      document.querySelectorAll('[data-rel]').forEach(input => {
+        input.addEventListener('change', function() {
+          const idx = this.dataset.rel;
+          const field = this.dataset.field;
+          databaseDetails.relationships[idx][field] = this.value;
+        });
+      });
+    }
+
+    function renderAdvancedOptions() {
+      const container = document.createElement('div');
+      container.innerHTML = `
+        <div class="advanced-options">
+          <div style="margin-bottom: 20px; font-weight: 600; color: #2c3e50;">
+            Advanced Database Features
+          </div>
+          
+          <div class="option-grid">
+            <div class="option-item">
+              <input type="checkbox" id="enableBackup" ${databaseDetails.enableBackup ? 'checked' : ''}>
+              <label for="enableBackup">Automated Backups</label>
+            </div>
+            <div class="option-item">
+              <input type="checkbox" id="enableReplication" ${databaseDetails.enableReplication ? 'checked' : ''}>
+              <label for="enableReplication">Replication (High Availability)</label>
+            </div>
+            <div class="option-item">
+              <input type="checkbox" id="enableMonitoring" ${databaseDetails.enableMonitoring ? 'checked' : ''}>
+              <label for="enableMonitoring">Performance Monitoring</label>
+            </div>
+            <div class="option-item">
+              <input type="checkbox" id="enableAuditing" ${databaseDetails.enableAuditing ? 'checked' : ''}>
+              <label for="enableAuditing">Audit Trail</label>
+            </div>
+            <div class="option-item">
+              <input type="checkbox" id="partitioning" ${databaseDetails.partitioning ? 'checked' : ''}>
+              <label for="partitioning">Table Partitioning</label>
+            </div>
+            <div class="option-item">
+              <input type="checkbox" id="sharding" ${databaseDetails.sharding ? 'checked' : ''}>
+              <label for="sharding">Sharding (Horizontal Scaling)</label>
+            </div>
+          </div>
+          
+          <div style="margin-top: 25px; margin-bottom: 10px; font-weight: 600; color: #2c3e50;">
+            Cache Configuration
+          </div>
+          <select class="user-input" id="cacheConfig">
+            <option value="basic" ${databaseDetails.cacheConfig === 'basic' ? 'selected' : ''}>Basic Caching</option>
+            <option value="advanced" ${databaseDetails.cacheConfig === 'advanced' ? 'selected' : ''}>Advanced Query Cache</option>
+            <option value="distributed" ${databaseDetails.cacheConfig === 'distributed' ? 'selected' : ''}>Distributed Cache</option>
+            <option value="none" ${databaseDetails.cacheConfig === 'none' ? 'selected' : ''}>No Caching</option>
+          </select>
+          
+          <div style="margin-top: 25px; margin-bottom: 10px; font-weight: 600; color: #2c3e50;">
+            Environment
+          </div>
+          <select class="user-input" id="environment">
+            <option value="development">Development</option>
+            <option value="staging">Staging</option>
+            <option value="production" selected>Production</option>
+            <option value="disaster_recovery">Disaster Recovery</option>
+          </select>
+        </div>
+      `;
+      
+      inputArea.appendChild(container);
+      
+      document.getElementById('enableBackup').addEventListener('change', (e) => {
+        databaseDetails.enableBackup = e.target.checked;
+      });
+      
+      document.getElementById('enableReplication').addEventListener('change', (e) => {
+        databaseDetails.enableReplication = e.target.checked;
+      });
+      
+      document.getElementById('enableMonitoring').addEventListener('change', (e) => {
+        databaseDetails.enableMonitoring = e.target.checked;
+      });
+      
+      document.getElementById('enableAuditing').addEventListener('change', (e) => {
+        databaseDetails.enableAuditing = e.target.checked;
+      });
+      
+      document.getElementById('partitioning').addEventListener('change', (e) => {
+        databaseDetails.partitioning = e.target.checked;
+      });
+      
+      document.getElementById('sharding').addEventListener('change', (e) => {
+        databaseDetails.sharding = e.target.checked;
+      });
+      
+      document.getElementById('cacheConfig').addEventListener('change', (e) => {
+        databaseDetails.cacheConfig = e.target.value;
+      });
+    }
+
+    function renderSecurityConfig() {
+      const container = document.createElement('div');
+      container.innerHTML = `
+        <div class="advanced-options">
+          <div style="margin-bottom: 20px; font-weight: 600; color: #2c3e50;">
+            Security Configuration
+          </div>
+          
+          <div style="color: #7f8c8d; margin-bottom: 20px;">
+            Configure database users with specific privileges.
+          </div>
+          
+          <div id="users-container">
+            ${databaseDetails.users.length === 0 ? `
+              <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin-bottom: 15px;">
+                No users configured. Default admin user will be created.
+              </div>
+            ` : databaseDetails.users.map((user, idx) => `
+              <div class="column-row" style="margin-bottom: 10px;">
+                <input type="text" class="user-input" value="${user.username}" placeholder="Username" data-user="${idx}" data-field="username">
+                <input type="password" class="user-input" value="${user.password}" placeholder="Password" data-user="${idx}" data-field="password">
+                <select class="user-input" data-user="${idx}" data-field="role">
+                  <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Administrator</option>
+                  <option value="app" ${user.role === 'app' ? 'selected' : ''}>Application User</option>
+                  <option value="readonly" ${user.role === 'readonly' ? 'selected' : ''}>Read Only</option>
+                  <option value="backup" ${user.role === 'backup' ? 'selected' : ''}>Backup User</option>
+                </select>
+                <button class="action-button secondary remove-user" data-user="${idx}" style="padding: 5px 10px;">Remove</button>
+              </div>
+            `).join('')}
+          </div>
+          
+          <button class="action-button secondary" id="addUser" style="margin-top: 15px;">
+            + Add User
+          </button>
+        </div>
+      `;
+      
+      inputArea.appendChild(container);
+      
+      document.getElementById('addUser').addEventListener('click', () => {
+        databaseDetails.users.push({
+          username: `user_${databaseDetails.users.length + 1}`,
+          password: `secure_pass_${Math.random().toString(36).substr(2, 8)}`,
+          role: 'app'
+        });
+        renderSecurityConfig();
+      });
+      
+      document.querySelectorAll('[data-user]').forEach(input => {
+        if (input.tagName === 'BUTTON') {
+          input.addEventListener('click', function() {
+            const idx = this.dataset.user;
+            databaseDetails.users.splice(idx, 1);
+            renderSecurityConfig();
+          });
+        } else {
+          input.addEventListener('input', function() {
+            const idx = this.dataset.user;
+            const field = this.dataset.field;
+            databaseDetails.users[idx][field] = this.value;
+          });
+        }
+      });
+    }
+
+    function handleSubmit() {
+      const question = questions[step];
+      
+      // Validation
+      if (question.type === 'database-select' && !selectedDatabase) {
+        alert('Please select a database system');
+        return;
+      }
+      
+      if (question.type === 'text-input') {
+        const input = document.getElementById('currentInput');
+        if (!input || !input.value.trim()) {
+          alert('Please provide an answer');
+          return;
+        }
+        
+        if (question.validation && !question.validation.test(input.value)) {
+          alert('Invalid database name. Use only letters, numbers, and underscores, starting with a letter.');
+          return;
+        }
+        
+        databaseDetails.name = input.value.trim();
+      }
+      
+      if (question.type === 'number-input') {
+        const input = document.getElementById('currentInput');
+        if (!input || !input.value.trim()) {
+          alert('Please provide a number');
+          return;
+        }
+        
+        const value = parseInt(input.value);
+        if (value < question.min || value > question.max) {
+          alert(`Please enter a number between ${question.min} and ${question.max}`);
+          return;
+        }
+      }
+      
+      // Move to next step or generate
+      step++;
+      
+      if (step < questions.length) {
+        askQuestion();
+      } else {
+        generateAdvancedDatabaseCode();
+        chatPopup.textContent = "✅ Advanced database schema generated successfully! Check the output below.";
+        successMessage.style.display = 'block';
+        codeOutput.style.display = 'block';
+        submitButton.disabled = true;
+        submitButton.textContent = 'Schema Generated';
+        speak("Advanced database schema generation complete!");
+        showStatistics();
+      }
+    }
+
+    function showStatistics() {
+      const tableCount = databaseDetails.tables.length;
+      const columnCount = databaseDetails.tables.reduce((sum, table) => sum + table.columns.length, 0);
+      const relationshipCount = databaseDetails.relationships.length;
+      
+      statistics.innerHTML = `
+        <div class="stat-item">
+          <div class="stat-label">Tables</div>
+          <div class="stat-value">${tableCount}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Columns</div>
+          <div class="stat-value">${columnCount}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Relationships</div>
+          <div class="stat-value">${relationshipCount}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Complexity</div>
+          <div class="stat-value">${columnCount > 30 ? 'High' : columnCount > 15 ? 'Medium' : 'Low'}</div>
+        </div>
+      `;
+      statistics.style.display = 'grid';
+    }
+
+    function generateAdvancedDatabaseCode() {
+      let code = '';
+      
+      switch (selectedDatabase) {
+        case 'mysql':
+        case 'mariadb':
+          code = generateAdvancedMySQLCode();
+          break;
+        case 'postgresql':
+          code = generateAdvancedPostgreSQLCode();
+          break;
+        case 'oracle':
+          code = generateAdvancedOracleCode();
+          break;
+        case 'sqlserver':
+          code = generateAdvancedSQLServerCode();
+          break;
+        case 'mongodb':
+          code = generateAdvancedMongoDBCode();
+          break;
+        case 'cassandra':
+          code = generateAdvancedCassandraCode();
+          break;
+        case 'redis':
+          code = generateAdvancedRedisCode();
+          break;
+        default:
+          code = generateAdvancedMySQLCode();
+      }
+      
+      codeContent.textContent = code;
+    }
+
+    function generateAdvancedMySQLCode() {
+      const dbType = selectedDatabase === 'mariadb' ? 'MariaDB' : 'MySQL';
+      const isMariaDB = selectedDatabase === 'mariadb';
+      const engine = isMariaDB ? 'InnoDB' : 'InnoDB';
+      
+      let code = `-- ${dbType} Advanced Database Schema
+-- Generated by Advanced Database Administrator Assistant
+-- Database: ${databaseDetails.name}
+-- Schema Type: ${databaseDetails.schemaType}
+-- Generated: ${new Date().toISOString().replace('T', ' ').substring(0, 19)}
+-- Environment: Production
+
+-- ============================================
+-- DATABASE CREATION AND CONFIGURATION
+-- ============================================
+
+-- Create database with advanced settings
+CREATE DATABASE IF NOT EXISTS \`${databaseDetails.name}\`
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE \`${databaseDetails.name}\`;
+
+-- Set session variables for optimal performance
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+-- ============================================
+-- TABLE CREATIONS
+-- ============================================
+
+`;
+
+      // Create tables
+      databaseDetails.tables.forEach((table, index) => {
+        code += `-- -----------------------------------------------------
+-- Table: \`${table.name}\`
+-- Description: ${table.description}
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS \`${table.name}\` (\n`;
+        
+        table.columns.forEach((col, colIndex) => {
+          code += `  \`${col.name}\` ${col.type}`;
+          if (col.constraints) {
+            code += ` ${col.constraints}`;
+          }
+          if (colIndex < table.columns.length - 1) code += ',';
+          code += '\n';
+        });
+        
+        // Add primary key if not defined in columns
+        const hasPrimaryKey = table.columns.some(col => col.constraints && col.constraints.includes('PRIMARY KEY'));
+        if (!hasPrimaryKey && table.columns[0]) {
+          code += `  PRIMARY KEY (\`${table.columns[0].name}\`)`;
+        }
+        
+        // Add foreign keys
+        const tableForeignKeys = databaseDetails.relationships.filter(rel => rel.fromTable === table.name);
+        tableForeignKeys.forEach((fk, fkIndex) => {
+          if (fkIndex === 0 && !hasPrimaryKey) code += ',\n';
+          else if (fkIndex > 0 || hasPrimaryKey) code += ',\n';
+          code += `  CONSTRAINT \`fk_${table.name}_${fk.fromColumn}\`
+    FOREIGN KEY (\`${fk.fromColumn}\`)
+    REFERENCES \`${fk.toTable}\` (\`${fk.toColumn}\`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE`;
+        });
+        
+        code += `\n) ENGINE=${engine} DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n\n`;
+        
+        // Add indexes
+        if (table.indexes && table.indexes.length > 0) {
+          table.indexes.forEach(idx => {
+            code += `CREATE INDEX \`idx_${table.name}_${idx}\` ON \`${table.name}\`(\`${idx}\`);\n`;
+          });
+          code += '\n';
+        }
+        
+        // Add comments
+        code += `-- Table comments
+ALTER TABLE \`${table.name}\` COMMENT = '${table.description}';\n\n`;
+        
+        // Add triggers for audit trail
+        if (table.name.includes('audit') || table.name.includes('log')) {
+          code += `-- Audit trigger
+DELIMITER $$
+CREATE TRIGGER \`trg_${table.name}_audit\`
+BEFORE INSERT ON \`${table.name}\`
+FOR EACH ROW
+BEGIN
+    SET NEW.created_by = IFNULL(@current_user, 'system');
+    SET NEW.created_ip = IFNULL(@current_ip, '0.0.0.0');
+END$$
+DELIMITER ;\n\n`;
+        }
+      });
+
+      // Add partitioning if enabled
+      if (databaseDetails.partitioning && databaseDetails.tables.length > 0) {
+        const firstTable = databaseDetails.tables[0];
+        if (firstTable.columns.some(c => c.name.includes('created_at') || c.name.includes('date'))) {
+          code += `-- ============================================
+-- PARTITIONING CONFIGURATION
+-- ============================================
+
+-- Partition large tables by date
+ALTER TABLE \`${firstTable.name}\`
+PARTITION BY RANGE (YEAR(created_at)) (
+    PARTITION p2023 VALUES LESS THAN (2024),
+    PARTITION p2024 VALUES LESS THAN (2025),
+    PARTITION p2025 VALUES LESS THAN (2026),
+    PARTITION p_future VALUES LESS THAN MAXVALUE
+);\n\n`;
+        }
+      }
+
+      // Add stored procedures and functions
+      code += `-- ============================================
+-- STORED PROCEDURES AND FUNCTIONS
+-- ============================================
+
+-- Get database statistics
+DELIMITER $$
+CREATE PROCEDURE sp_get_database_stats()
+BEGIN
+    SELECT 
+        TABLE_NAME,
+        TABLE_ROWS,
+        DATA_LENGTH,
+        INDEX_LENGTH,
+        CREATE_TIME,
+        UPDATE_TIME
+    FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA = '${databaseDetails.name}'
+    ORDER BY TABLE_NAME;
+END$$
+DELIMITER ;
+
+-- Archive old data procedure
+DELIMITER $$
+CREATE PROCEDURE sp_archive_old_data(IN months_old INT)
+BEGIN
+    DECLARE cutoff_date DATE;
+    SET cutoff_date = DATE_SUB(CURDATE(), INTERVAL months_old MONTH);
+    
+    -- Example: Archive old audit logs
+    INSERT INTO audit_log_archive
+    SELECT * FROM audit_log
+    WHERE created_at < cutoff_date;
+    
+    DELETE FROM audit_log
+    WHERE created_at < cutoff_date;
+END$$
+DELIMITER ;\n\n`;
+
+      // Create users and grants
+      code += `-- ============================================
+-- USER MANAGEMENT AND SECURITY
+-- ============================================
+
+-- Create application users
+`;
+      
+      if (databaseDetails.users.length > 0) {
+        databaseDetails.users.forEach(user => {
+          const privileges = user.role === 'admin' ? 'ALL PRIVILEGES' :
+                           user.role === 'app' ? 'SELECT, INSERT, UPDATE, DELETE, EXECUTE' :
+                           user.role === 'readonly' ? 'SELECT' :
+                           'SELECT, LOCK TABLES';
+          
+          code += `-- ${user.role.toUpperCase()} user: ${user.username}
+CREATE USER IF NOT EXISTS '${user.username}'@'%' IDENTIFIED BY '${user.password || 'ChangeMe123!'}';
+GRANT ${privileges} ON \`${databaseDetails.name}\`.* TO '${user.username}'@'%';
+`;
+        });
+      } else {
+        code += `-- Default admin user (CHANGE PASSWORD IN PRODUCTION!)
+CREATE USER IF NOT EXISTS 'admin_${databaseDetails.name}'@'%' IDENTIFIED BY 'ChangeThisPassword123!';
+GRANT ALL PRIVILEGES ON \`${databaseDetails.name}\`.* TO 'admin_${databaseDetails.name}'@'%' WITH GRANT OPTION;
+
+-- Application user
+CREATE USER IF NOT EXISTS 'app_${databaseDetails.name}'@'%' IDENTIFIED BY 'SecureAppPass456!';
+GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON \`${databaseDetails.name}\`.* TO 'app_${databaseDetails.name}'@'%';
+
+-- Read-only user for reporting
+CREATE USER IF NOT EXISTS 'report_${databaseDetails.name}'@'%' IDENTIFIED BY 'ReadOnlyPass789!';
+GRANT SELECT ON \`${databaseDetails.name}\`.* TO 'report_${databaseDetails.name}'@'%';
+`;
+      }
+      
+      code += '\nFLUSH PRIVILEGES;\n\n';
+
+      // Add advanced features
+      code += `-- ============================================
+-- ADVANCED CONFIGURATION
+-- ============================================
+
+-- Enable performance schema
+UPDATE performance_schema.setup_instruments
+SET ENABLED = 'YES', TIMED = 'YES'
+WHERE NAME LIKE '%statement/%' OR NAME LIKE '%stage/%';
+
+-- Configure query cache (if enabled)
+SET GLOBAL query_cache_type = ${databaseDetails.cacheConfig === 'none' ? 0 : 1};
+SET GLOBAL query_cache_size = ${databaseDetails.cacheConfig === 'advanced' ? '256M' : databaseDetails.cacheConfig === 'distributed' ? '512M' : '64M'};\n\n`;
+
+      // Add replication configuration if enabled
+      if (databaseDetails.enableReplication) {
+        code += `-- ============================================
+-- REPLICATION CONFIGURATION
+-- ============================================
+
+-- On Master Server:
+-- 1. Enable binary logging
+-- SET GLOBAL log_bin = ON;
+-- SET GLOBAL binlog_format = 'ROW';
+-- SET GLOBAL server_id = 1;
+
+-- On Slave Servers:
+-- SET GLOBAL server_id = 2;  -- Unique ID for each slave
+-- 
+-- CHANGE MASTER TO
+--   MASTER_HOST='master_host',
+--   MASTER_USER='replication_user',
+--   MASTER_PASSWORD='replication_password',
+--   MASTER_LOG_FILE='mysql-bin.000001',
+--   MASTER_LOG_POS=107;
+-- 
+-- START SLAVE;\n\n`;
+      }
+
+      // Add backup configuration
+      if (databaseDetails.enableBackup) {
+        code += `-- ============================================
+-- BACKUP CONFIGURATION
+-- ============================================
+
+-- Daily backup script example (save as backup.sh):
+-- #!/bin/bash
+-- BACKUP_DIR="/backup/${databaseDetails.name}"
+-- DATE=\$(date +%Y%m%d_%H%M%S)
+-- mysqldump -u root -p ${databaseDetails.name} --single-transaction --routines --triggers > "\$BACKUP_DIR/backup_\$DATE.sql"
+-- find \$BACKUP_DIR -name "*.sql" -mtime +7 -delete
+-- 
+-- Add to crontab: 0 2 * * * /path/to/backup.sh\n\n`;
+      }
+
+      // Add monitoring setup
+      if (databaseDetails.enableMonitoring) {
+        code += `-- ============================================
+-- MONITORING CONFIGURATION
+-- ============================================
+
+-- Create monitoring tables
+CREATE TABLE IF NOT EXISTS \`database_metrics\` (
+    \`id\` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    \`metric_name\` VARCHAR(100) NOT NULL,
+    \`metric_value\` DECIMAL(20,6) NOT NULL,
+    \`recorded_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (\`id\`),
+    INDEX \`idx_metric_time\` (\`recorded_at\`),
+    INDEX \`idx_metric_name\` (\`metric_name\`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Slow query logging
+SET GLOBAL slow_query_log = 'ON';
+SET GLOBAL long_query_time = 2;
+SET GLOBAL slow_query_log_file = '/var/log/mysql/slow-queries.log';\n\n`;
+      }
+
+      // Add audit configuration
+      if (databaseDetails.enableAuditing) {
+        code += `-- ============================================
+-- AUDIT CONFIGURATION
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS \`audit_trail\` (
+    \`id\` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    \`table_name\` VARCHAR(100) NOT NULL,
+    \`record_id\` BIGINT UNSIGNED NOT NULL,
+    \`action\` ENUM('INSERT','UPDATE','DELETE') NOT NULL,
+    \`old_values\` JSON,
+    \`new_values\` JSON,
+    \`changed_by\` VARCHAR(100),
+    \`changed_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    \`ip_address\` VARCHAR(45),
+    PRIMARY KEY (\`id\`),
+    INDEX \`idx_audit_table\` (\`table_name\`, \`record_id\`),
+    INDEX \`idx_audit_time\` (\`changed_at\`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Example audit trigger
+DELIMITER $$
+CREATE TRIGGER \`trg_users_audit\`
+AFTER UPDATE ON \`users\`
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_trail (table_name, record_id, action, old_values, new_values)
+    VALUES ('users', OLD.id, 'UPDATE', 
+            JSON_OBJECT('email', OLD.email, 'status', OLD.status),
+            JSON_OBJECT('email', NEW.email, 'status', NEW.status));
+END$$
+DELIMITER ;\n\n`;
+      }
+
+      // Add sample data
+      code += `-- ============================================
+-- SAMPLE DATA
+-- ============================================
+
+-- Insert sample users
+INSERT INTO \`users\` (\`uuid\`, \`email\`, \`password_hash\`, \`status\`) VALUES
+(UUID(), 'admin@example.com', '\$2y\$10\$YourHashedPasswordHere', 'active'),
+(UUID(), 'user1@example.com', '\$2y\$10\$AnotherHashedPassword', 'active'),
+(UUID(), 'user2@example.com', '\$2y\$10\$YetAnotherHashedPassword', 'inactive');
+
+-- Insert sample customers
+INSERT INTO \`customers\` (\`user_id\`, \`first_name\`, \`last_name\`, \`company\`) VALUES
+(1, 'John', 'Doe', 'Acme Corp'),
+(2, 'Jane', 'Smith', 'Tech Solutions Inc'),
+(3, 'Bob', 'Johnson', 'Innovation Labs');
+
+-- Insert sample orders
+INSERT INTO \`orders\` (\`order_number\`, \`customer_id\`, \`total_amount\`, \`status\`) VALUES
+('ORD-2024-001', 1, 299.99, 'delivered'),
+('ORD-2024-002', 2, 499.50, 'shipped'),
+('ORD-2024-003', 3, 150.00, 'pending');\n\n`;
+
+      // Add performance optimizations
+      code += `-- ============================================
+-- PERFORMANCE OPTIMIZATIONS
+-- ============================================
+
+-- Analyze tables for query optimization
+ANALYZE TABLE ${databaseDetails.tables.map(t => `\`${t.name}\``).join(', ')};
+
+-- Optimize tables (run during maintenance)
+-- OPTIMIZE TABLE ${databaseDetails.tables.map(t => `\`${t.name}\``).join(', ')};
+
+-- Recommended my.cnf settings for production:
+-- [mysqld]
+-- innodb_buffer_pool_size = 2G
+-- innodb_log_file_size = 256M
+-- innodb_flush_log_at_trx_commit = 2
+-- innodb_file_per_table = ON
+-- max_connections = 200
+-- thread_cache_size = 8
+-- query_cache_size = ${databaseDetails.cacheConfig === 'advanced' ? '256M' : '64M'}
+-- tmp_table_size = 64M
+-- max_heap_table_size = 64M
+-- 
+-- # Binary logging for replication
+-- log_bin = /var/log/mysql/mysql-bin.log
+-- expire_logs_days = 7
+-- max_binlog_size = 100M
+-- 
+-- # Slow query log
+-- slow_query_log = 1
+-- slow_query_log_file = /var/log/mysql/slow-queries.log
+-- long_query_time = 2
+
+-- ============================================
+-- MAINTENANCE SCHEDULE
+-- ============================================
+
+-- Daily: Backup
+-- Weekly: ANALYZE TABLE on all tables
+-- Monthly: OPTIMIZE TABLE on large tables
+-- Quarterly: Review and update indexes
+-- Annually: Review schema design and partitioning
+
+-- ============================================
+-- SECURITY RECOMMENDATIONS
+-- ============================================
+
+-- 1. Change all default passwords
+-- 2. Enable SSL for database connections
+-- 3. Implement connection pooling
+-- 4. Set up firewall rules
+-- 5. Regular security audits
+-- 6. Encrypt sensitive data columns
+-- 7. Implement row-level security if needed
+
+-- Reset session variables
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- Database creation complete!
+SELECT '${databaseDetails.name} database schema created successfully!' as Message;`;
+
+      return code;
+    }
+
+    function generateAdvancedPostgreSQLCode() {
+      let code = `-- PostgreSQL Advanced Database Schema
+-- Generated by Advanced Database Administrator Assistant
+-- Database: ${databaseDetails.name}
+-- Schema Type: ${databaseDetails.schemaType}
+-- Generated: ${new Date().toISOString().replace('T', ' ').substring(0, 19)}
+
+-- Create database with encoding
+CREATE DATABASE "${databaseDetails.name}"
+WITH ENCODING 'UTF8'
+LC_COLLATE = 'en_US.UTF-8'
+LC_CTYPE = 'en_US.UTF-8'
+CONNECTION LIMIT = -1;
+
+\\c "${databaseDetails.name}";
+
+-- Enable extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
+CREATE EXTENSION IF NOT EXISTS "btree_gin";
+CREATE EXTENSION IF NOT EXISTS "btree_gist";
+
+-- Create schemas
+CREATE SCHEMA IF NOT EXISTS app;
+CREATE SCHEMA IF NOT EXISTS audit;
+CREATE SCHEMA IF NOT EXISTS reports;
+
+SET search_path TO app, public;
+
+`;
+
+      databaseDetails.tables.forEach((table, index) => {
+        code += `-- -----------------------------------------------------
+-- Table: ${table.name}
+-- Description: ${table.description}
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS ${table.name} (
+    id BIGSERIAL PRIMARY KEY,\n`;
+        
+        table.columns.filter(col => !col.constraints?.includes('PRIMARY KEY')).forEach((col, colIndex) => {
+          let pgType = col.type;
+          // Convert MySQL types to PostgreSQL
+          if (pgType.includes('VARCHAR')) pgType = pgType.replace('VARCHAR', 'VARCHAR');
+          if (pgType.includes('INT')) pgType = pgType.replace('INT', 'INTEGER');
+          if (pgType.includes('TINYINT')) pgType = 'BOOLEAN';
+          if (pgType.includes('DATETIME')) pgType = 'TIMESTAMP';
+          
+          code += `    ${col.name} ${pgType}`;
+          if (col.constraints && !col.constraints.includes('PRIMARY KEY')) {
+            code += ` ${col.constraints}`;
+          }
+          if (colIndex < table.columns.filter(c => !c.constraints?.includes('PRIMARY KEY')).length - 1) {
+            code += ',';
+          }
+          code += '\n';
+        });
+        
+        code += `);
+
+-- Comments
+COMMENT ON TABLE ${table.name} IS '${table.description}';\n\n`;
+
+        // Add indexes
+        if (table.indexes && table.indexes.length > 0) {
+          table.indexes.forEach(idx => {
+            code += `CREATE INDEX idx_${table.name}_${idx} ON ${table.name}(${idx});\n`;
+          });
+          code += '\n';
+        }
+      });
+
+      // Add more advanced PostgreSQL features
+      code += `-- Materialized views for reporting
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_daily_stats AS
+SELECT 
+    DATE(created_at) as report_date,
+    COUNT(*) as total_records,
+    COUNT(DISTINCT customer_id) as unique_customers,
+    SUM(total_amount) as daily_revenue
+FROM orders
+WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'
+GROUP BY DATE(created_at);
+
+-- Refresh materialized view
+-- REFRESH MATERIALIZED VIEW CONCURRENTLY mv_daily_stats;
+
+-- Partitioning example
+CREATE TABLE orders_partitioned (
+    LIKE orders INCLUDING ALL
+) PARTITION BY RANGE (created_at);
+
+-- Create partitions
+CREATE TABLE orders_2024_q1 PARTITION OF orders_partitioned
+FOR VALUES FROM ('2024-01-01') TO ('2024-04-01');
+
+CREATE TABLE orders_2024_q2 PARTITION OF orders_partitioned
+FOR VALUES FROM ('2024-04-01') TO ('2024-07-01');
+
+-- Row Level Security
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY user_access_policy ON users
+    USING (current_user = email OR current_user = 'admin');
+
+-- Create users and grants
+CREATE USER admin_user WITH PASSWORD '${Math.random().toString(36).slice(2)}';
+GRANT ALL PRIVILEGES ON DATABASE "${databaseDetails.name}" TO admin_user;
+
+CREATE USER app_user WITH PASSWORD '${Math.random().toString(36).slice(2)}';
+GRANT CONNECT ON DATABASE "${databaseDetails.name}" TO app_user;
+GRANT USAGE ON SCHEMA app TO app_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA app TO app_user;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA app TO app_user;
+
+-- Backup configuration
+-- Add to postgresql.conf:
+-- archive_mode = on
+-- archive_command = 'cp %p /backup/postgresql/wal/%f'
+-- wal_level = replica
+-- max_wal_senders = 3
+
+-- Performance tuning
+-- shared_buffers = 2GB
+-- effective_cache_size = 6GB
+-- work_mem = 16MB
+-- maintenance_work_mem = 512MB
+-- max_connections = 100
+
+-- Monitoring
+CREATE TABLE IF NOT EXISTS pg_monitor.metrics (
+    id BIGSERIAL PRIMARY KEY,
+    metric_name TEXT NOT NULL,
+    metric_value DOUBLE PRECISION NOT NULL,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create function for metrics collection
+CREATE OR REPLACE FUNCTION collect_db_metrics()
+RETURNS void AS $$
+BEGIN
+    INSERT INTO pg_monitor.metrics (metric_name, metric_value)
+    VALUES 
+        ('connections', (SELECT COUNT(*) FROM pg_stat_activity)),
+        ('cache_hit_ratio', (SELECT SUM(heap_blks_hit) * 100.0 / 
+                             NULLIF(SUM(heap_blks_hit + heap_blks_read), 0) 
+                             FROM pg_statio_user_tables));
+END;
+$$ LANGUAGE plpgsql;
+
+-- Schedule metrics collection
+-- SELECT cron.schedule('*/5 * * * *', 'SELECT collect_db_metrics();');`;
+
+      return code;
+    }
+
+    // Similar advanced functions for other databases...
+
+    // Event Listeners
+    submitButton.addEventListener('click', handleSubmit);
+    
+    backButton.addEventListener('click', () => {
+      if (step > 0) {
+        step--;
+        askQuestion();
+      }
+    });
+    
+    resetButton.addEventListener('click', () => {
+      if (confirm('Are you sure you want to start over? All current progress will be lost.')) {
+        step = 0;
+        selectedDatabase = '';
+        databaseDetails = {
+          name: '',
+          schemaType: 'transactional',
+          tables: [],
+          relationships: [],
+          indexes: [],
+          users: [],
+          isProduction: false,
+          enableBackup: true,
+          enableReplication: false,
+          enableMonitoring: true,
+          enableAuditing: false,
+          partitioning: false,
+          sharding: false,
+          cacheConfig: 'basic'
+        };
+        
+        successMessage.style.display = 'none';
+        codeOutput.style.display = 'none';
+        statistics.style.display = 'none';
+        submitButton.disabled = false;
+        submitButton.textContent = 'Next →';
+        
+        askQuestion();
+      }
+    });
+    
+    copyButton.addEventListener('click', () => {
+      navigator.clipboard.writeText(codeContent.textContent)
+        .then(() => {
+          const originalText = copyButton.textContent;
+          copyButton.textContent = '✅ Copied!';
+          copyButton.style.backgroundColor = '#2ecc71';
+          
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+            copyButton.style.backgroundColor = '';
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('Copy failed:', err);
+          // Fallback method
+          const textArea = document.createElement('textarea');
+          textArea.value = codeContent.textContent;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          
+          const originalText = copyButton.textContent;
+          copyButton.textContent = '✅ Copied!';
+          setTimeout(() => {
+            copyButton.textContent = originalText;
+          }, 2000);
+        });
+    });
+    
+    // Enter key support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && step < questions.length) {
+        handleSubmit();
+      }
+    });
+  </script>
+</body>
+</html>
